@@ -27,13 +27,13 @@ abstract class TrackFactory implements Track {
 
 	constructor(type: "audio" | "midi" | "group" | "return", node: Element) {
 		this.type = type;
-    this.name = this.getTrackName(node);
-    this.groupId = this.getGroupId(node);
-		this.devices = this.getDevices(node);
-		this.audios = this.getAudios(node);
+    this.name = this.fetchTrackName(node);
+    this.groupId = this.fetchGroupId(node);
+		this.devices = this.fetchDevices(node);
+		this.audios = this.fetchAudios(node);
 	}
 
-	private getTrackName(node: Element): string {
+	private fetchTrackName(node: Element): string {
 		const e = node.getElementsByTagName("Name");
 		const name = e[0].getElementsByTagName("EffectiveName").item(0)?.getAttribute("Value");
 		if (typeof name !== "string") {
@@ -43,7 +43,7 @@ abstract class TrackFactory implements Track {
 		return name;
 	}
 
-	private getGroupId(node: Element): number | null {
+	private fetchGroupId(node: Element): number | null {
 		const e = node.getElementsByTagName("TrackGroupId");
 		const groupId = e[0].getAttribute("TrackGroupId");
 		if (typeof groupId !== "string" || groupId === "-1") {
@@ -53,11 +53,11 @@ abstract class TrackFactory implements Track {
 		return parseInt(groupId, 10);
 	}
 
-	private getDevices(node: Element): Device[] {
+	private fetchDevices(node: Element): Device[] {
 		throw new Error("getDevices Method not implemented");
 	}
 
-	protected getAudios(node: Element): Audio[] {
+	protected fetchAudios(node: Element): Audio[] {
 		return [];
 	}
 }
@@ -67,7 +67,7 @@ export class AudioTrack extends TrackFactory {
 		super("audio", node);
 	}
 
-	protected getAudios(node: Element): Audio[] {
+	protected fetchAudios(node: Element): Audio[] {
 		const audios: Audio[] = [];
 
 		const audioClips = node.getElementsByTagName("AudioClip");

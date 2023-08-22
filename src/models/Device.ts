@@ -10,8 +10,8 @@ abstract class DeviceReference implements Device {
 	}
 
 	createDevice(node: Element): Device {
-		this.name = this.getDeviceName(node);
-		this.format = this.getDeviceFormat(node);
+		this.name = this.fetchDeviceName(node);
+		this.format = this.fetchDeviceFormat(node);
 
 		return {
 			name: this.name,
@@ -20,13 +20,13 @@ abstract class DeviceReference implements Device {
 		};
 	}
 
-	getDeviceName(node: Element): string {
+	fetchDeviceName(node: Element): string {
 		throw new Error("Method not implemented.");
 	}
-	getDeviceType(node: Element): "pluginDevice" | "abletonDevice" | "maxDevice" | undefined {
+	fetchDeviceType(node: Element): "pluginDevice" | "abletonDevice" | "maxDevice" | undefined {
 		throw new Error("Method not implemented.");
 	}
-	getDeviceFormat(node: Element): "vst3" | "vst" | undefined {
+	fetchDeviceFormat(node: Element): "vst3" | "vst" | undefined {
 		throw new Error("Method not implemented.");
 	}
 }
@@ -36,7 +36,7 @@ export class PluginDevice extends DeviceReference {
 		super("pluginDevice");
 	}
 
-	getDeviceFormat(node: Element): "vst3" | "vst" | undefined {
+	fetchDeviceFormat(node: Element): "vst3" | "vst" | undefined {
 		const deviceInfo = node.getElementsByTagName("PluginDesc").item(0)?.firstElementChild;
 
     switch (deviceInfo?.nodeName) {

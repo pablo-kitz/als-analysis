@@ -13,7 +13,7 @@ export class AudioReference implements Audio {
 	}
 
 	createAudioReference(node: Element): Audio {
-		this.location = this.getAudioLocation(node);
+		this.location = this.fetchAudioLocation(node);
 
     return {
       view: this.view,
@@ -21,7 +21,7 @@ export class AudioReference implements Audio {
     }
 	}
 
-	getAudioLocation(node: Element): string {
+	fetchAudioLocation(node: Element): string {
 		const location = node.getElementsByTagName("OriginalFileRef").item(0)?.getElementsByTagName("Path").item(0)?.getAttribute("Value");
 
 		if (typeof location !== "string") {
