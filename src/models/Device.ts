@@ -1,51 +1,47 @@
 import { Device } from "types";
 
-abstract class DeviceReference implements Device {
+export class DeviceParser {
+	static parseDevice(node: Element): Device {
+		switch (node.nodeName) {
+			case "VstPluginInfo":
+				return new VstPluginDevice(node);
+			case "Vst3PluginInfo":
+				return new Vst3PluginDevice(node);
+			default:
+				throw new Error("Unknown device type or no current implementation");
+		}
+	}
+}
+
+abstract class DeviceFactory implements Device {
 	name: string = "";
-	type: "pluginDevice" | "abletonDevice" | "maxDevice";
+	type: "vstPlugin" | "vst3Plugin" | "maxMidiDevice" | "maxInstrumentDevice" | "maxAudioEffectDevice" | "abletonDevice";
 	format: "vst3" | "vst" | undefined;
 
-	constructor(type: "pluginDevice" | "abletonDevice" | "maxDevice") {
+	constructor(type: "vstPlugin" | "vst3Plugin" | "maxMidiDevice" | "maxInstrumentDevice" | "maxAudioEffectDevice" | "abletonDevice", node: Element) {
 		this.type = type;
+		this.name = this.fetchDeviceName(node)
 	}
 
-	createDevice(node: Element): Device {
-		this.name = this.fetchDeviceName(node);
-		this.format = this.fetchDeviceFormat(node);
+	abstract fetchDeviceName(node: Element): string
+}
 
-		return {
-			name: this.name,
-			type: this.type,
-			format: this.format,
-		};
+export class VstPluginDevice extends DeviceFactory {
+	constructor(node: Element) {
+		super("vstPlugin", node);
 	}
-
+	
 	fetchDeviceName(node: Element): string {
-		throw new Error("Method not implemented.");
-	}
-	fetchDeviceType(node: Element): "pluginDevice" | "abletonDevice" | "maxDevice" | undefined {
-		throw new Error("Method not implemented.");
-	}
-	fetchDeviceFormat(node: Element): "vst3" | "vst" | undefined {
 		throw new Error("Method not implemented.");
 	}
 }
 
-export class PluginDevice extends DeviceReference {
-	constructor() {
-		super("pluginDevice");
+export class Vst3PluginDevice extends DeviceFactory {
+	constructor(node: Element) {
+		super("vst3Plugin", node);
 	}
-
-	fetchDeviceFormat(node: Element): "vst3" | "vst" | undefined {
-		const deviceInfo = node.getElementsByTagName("PluginDesc").item(0)?.firstElementChild;
-
-    switch (deviceInfo?.nodeName) {
-			case "Vst3PluginInfo":
-				return "vst3";
-			case "VstPluginInfo":
-				return "vst";
-			default:
-				return undefined;
-		}
+	
+	fetchDeviceName(node: Element): string {
+		throw new Error("Method not implemented.");
 	}
 }

@@ -7,8 +7,7 @@ export interface Track {
 }
 
 export type Device = {
-	type: "pluginDevice" | "abletonDevice" | "maxDevice" | undefined;
-	format: "vst3" | "vst" | undefined;
+	type: "vstPlugin" | "vst3Plugin" | "maxMidiDevice" | "maxInstrumentDevice" | "maxAudioEffectDevice" | "abletonDevice" 
 	name: string;
 	// isRack: boolean;
 	// isEnabled: boolean;
