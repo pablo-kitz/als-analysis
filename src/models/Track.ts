@@ -1,5 +1,6 @@
 import { Device, Track, Audio } from "types";
 import { AudioReference } from "./Audio";
+import { DeviceParser } from "./Device";
 
 export class TrackParser {
 	static parseTrack(node: Element): Track {
@@ -54,7 +55,19 @@ abstract class TrackFactory implements Track {
 	}
 
 	private fetchDevices(node: Element): Device[] {
-		throw new Error("getDevices Method not implemented");
+		const deviceNodes = node.getElementsByTagName("Devices").item(0)?.children;
+		const devices: Device[] = [];
+
+		if (deviceNodes == undefined) {
+			return devices
+    }
+		
+    for (let i = 0; i < deviceNodes.length; i++) {
+      const device = DeviceParser.parseDevice(deviceNodes[i]);
+      devices.push(device);
+    }
+  
+    return devices;
 	}
 
 	protected fetchAudios(node: Element): Audio[] {
