@@ -1,5 +1,4 @@
-import { Track } from "types";
-import { TrackParser } from "./Track";
+import { TrackParser, Track } from "./Track";
 
 export class ALSReport {
 	fileName: string;
@@ -11,11 +10,12 @@ export class ALSReport {
     this.fileName = fileName
     this.liveVer = this.fetchLiveVersion(root)
     this.tracks = this.fetchTracks(root)
+    this.tracks.push(this.fetchMasterTrack(root))
     this.createdDate = new Date()
   }
 
   private fetchLiveVersion(root: Element): string {
-    const creatorAttribute = root.getElementsByTagName("Ableton").item(0)?.getAttribute("Creator");
+    const creatorAttribute = root.getAttribute("Creator");
     return creatorAttribute ?? "";
   }
 
@@ -31,5 +31,13 @@ export class ALSReport {
     }
   
     return tracks;
+  }
+
+  private fetchMasterTrack(root:Element): Track {
+    const masterNode = root.getElementsByTagName("MasterTrack").item(0)
+    if (masterNode) {
+      return TrackParser.parseTrack(masterNode)
+    }
+    throw new Error("No Master Track found")
   }
 }

@@ -1,6 +1,13 @@
-import { Device, Track, Audio } from "types";
-import { AudioReference } from "./Audio";
-import { DeviceParser } from "./Device";
+import { AudioParser, Audio } from "./Audio";
+import { DeviceParser, Device } from "./Device";
+
+export interface Track {
+	name: string;
+	type:  "audio" | "midi" | "group" | "return" | "master" | "chain";
+	groupId: number | null;
+	devices: Device[];
+	audios: Audio[];
+}
 
 export class TrackParser {
 	static parseTrack(node: Element): Track {
@@ -13,7 +20,13 @@ export class TrackParser {
 				return new GroupTrack(node);
 			case "ReturnTrack":
 				return new ReturnTrack(node);
+			case "MasterTrack":
+				return new MasterTrack(node);
+			case "InstrumentBranch":
+			case "AudioEffectBranch":
+				return new ChainTrack(node);
 			default:
+				console.log(node.nodeName)
 				throw new Error("Unknown track type or no current implementation");
 		}
 	}
@@ -22,21 +35,20 @@ export class TrackParser {
 abstract class TrackFactory implements Track {
 	name: string = "";
 	groupId: number | null = null;
-	type: "audio" | "midi" | "group" | "return";
+	type:  "audio" | "midi" | "group" | "return" | "master" | "chain";
 	devices: Device[] = [];
 	audios: Audio[] = [];
 
-	constructor(type: "audio" | "midi" | "group" | "return", node: Element) {
+	constructor(type:  "audio" | "midi" | "group" | "return" | "master" | "chain", node: Element) {
 		this.type = type;
-    this.name = this.fetchTrackName(node);
-    this.groupId = this.fetchGroupId(node);
+		this.name = this.fetchTrackName(node);
+		this.groupId = this.fetchGroupId(node);
 		this.devices = this.fetchDevices(node);
 		this.audios = this.fetchAudios(node);
 	}
 
 	private fetchTrackName(node: Element): string {
-		const e = node.getElementsByTagName("Name");
-		const name = e[0].getElementsByTagName("EffectiveName").item(0)?.getAttribute("Value");
+		const name = node.getElementsByTagName("EffectiveName").item(0)?.getAttribute("Value");
 		if (typeof name !== "string") {
 			throw new Error("Name was not found");
 		}
@@ -45,9 +57,8 @@ abstract class TrackFactory implements Track {
 	}
 
 	private fetchGroupId(node: Element): number | null {
-		const e = node.getElementsByTagName("TrackGroupId");
-		const groupId = e[0].getAttribute("TrackGroupId");
-		if (typeof groupId !== "string" || groupId === "-1") {
+		const groupId = node.getElementsByTagName("TrackGroupId").item(0)?.getAttribute("TrackGroupId");
+		if (typeof groupId !== "string" || groupId === "-1" || groupId === null) {
 			return null;
 		}
 
@@ -59,18 +70,19 @@ abstract class TrackFactory implements Track {
 		const devices: Device[] = [];
 
 		if (deviceNodes == undefined) {
-			return devices
-    }
-		
-    for (let i = 0; i < deviceNodes.length; i++) {
-      const device = DeviceParser.parseDevice(deviceNodes[i]);
-      devices.push(device);
-    }
-  
-    return devices;
+			return devices;
+		}
+
+		for (let i = 0; i < deviceNodes.length; i++) {
+			const device = DeviceParser.parseDevice(deviceNodes[i]);
+			devices.push(device);
+		}
+
+		return devices;
 	}
 
 	protected fetchAudios(node: Element): Audio[] {
+		node
 		return [];
 	}
 }
@@ -85,29 +97,11 @@ export class AudioTrack extends TrackFactory {
 
 		const audioClips = node.getElementsByTagName("AudioClip");
 		for (let i = 0; i < audioClips.length; i++) {
-			const audioClip = audioClips[i];
-
-			if (this.isSessionView(audioClip)) {
-				audios.push(new AudioReference("session").createAudioReference(audioClip));
-			} else if (this.isArrangementView(audioClip)) {
-				audios.push(new AudioReference("arrangement").createAudioReference(audioClip));
-			} else {
-				throw new Error("Audio out of bounds");
-			}
+			const audio = AudioParser.parseAudio(audioClips[i]);
+			audios.push(audio);
 		}
 
 		return audios;
-	}
-
-	// Extra audio searching methods
-	private isSessionView(audioClip: Element): boolean {
-		const clipSlot = audioClip.closest("ClipSlotList");
-		return clipSlot !== null;
-	}
-
-	private isArrangementView(audioClip: Element): boolean {
-		const arrangerEvent = audioClip.closest("Events");
-		return arrangerEvent !== null;
 	}
 }
 
@@ -126,5 +120,17 @@ export class GroupTrack extends TrackFactory {
 export class ReturnTrack extends TrackFactory {
 	constructor(node: Element) {
 		super("return", node);
+	}
+}
+
+export class MasterTrack extends TrackFactory {
+	constructor(node: Element) {
+		super("master", node)
+	}
+}
+
+export class ChainTrack extends TrackFactory {
+	constructor(node: Element) {
+		super("chain", node)
 	}
 }

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { AnalizeALSFile } from "./models";
-import { ALSReport } from "types";
+import { ALSReport } from "./models/ALSReport";
 
 function App() {
 	const [result, setResult] = useState<ALSReport | null>(null);
