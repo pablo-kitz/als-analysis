@@ -3,37 +3,41 @@ import { XMLValidator } from "fast-xml-parser";
 import { ALSReport } from "./ALSReport";
 
 export async function AnalizeALSFile(form: FormData): Promise<ALSReport> {
-	try {
-		if (!form.has("file")) {
-			throw new Error("No file uploaded");
-		}
+  try {
+    if (!form.has("file")) {
+      throw new Error("No file uploaded");
+    }
 
-		const file = form.get("file") as File;
+    const file = form.get("file") as File;
 
-		const fileArrayBuffer = await file.arrayBuffer();
-		const unzippedContent = pako.inflate(fileArrayBuffer, { to: "string" });
+    const fileArrayBuffer = await file.arrayBuffer();
+    const unzippedContent = pako.inflate(fileArrayBuffer, { to: "string" });
 
-		if (!XMLValidator.validate(unzippedContent)) {
-			throw new Error("Invalid XML Content");
-		}
+    if (!XMLValidator.validate(unzippedContent)) {
+      throw new Error("Invalid XML Content");
+    }
 
-		const parser = new DOMParser();
-		const parsedFile: XMLDocument = parser.parseFromString(unzippedContent, "text/xml");
-		const root = parsedFile.documentElement;
+    const parser = new DOMParser();
+    console.log(unzippedContent);
+    const parsedFile: XMLDocument = parser.parseFromString(
+      unzippedContent,
+      "text/xml",
+    );
+    const root = parsedFile.documentElement;
 
-		const result = new ALSReport(file.name, root)
+    const result = new ALSReport(file.name, root);
 
-		return result;
-	} catch (error) {
-		if (error instanceof Error) {
-			console.error("Error:", error.message);
-			throw error;
-		} else if (typeof error === "string") {
-			console.error("Error:", error);
-			throw new Error(error);
-		} else {
-			console.error("Unknown error occurred");
-			throw new Error("Unknown error occurred");
-		}
-	}
+    return result;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error:", error.message);
+      throw error;
+    } else if (typeof error === "string") {
+      console.error("Error:", error);
+      throw new Error(error);
+    } else {
+      console.error("Unknown error occurred");
+      throw new Error("Unknown error occurred");
+    }
+  }
 }

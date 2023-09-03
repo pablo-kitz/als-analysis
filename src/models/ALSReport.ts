@@ -1,17 +1,17 @@
 import { TrackParser, Track } from "./Track";
 
 export class ALSReport {
-	fileName: string;
-	liveVer: string;
-	tracks: Track[];
+  fileName: string;
+  liveVer: string;
+  tracks: Track[];
   createdDate: Date;
 
   constructor(fileName: string, root: Element) {
-    this.fileName = fileName
-    this.liveVer = this.fetchLiveVersion(root)
-    this.tracks = this.fetchTracks(root)
-    this.tracks.push(this.fetchMasterTrack(root))
-    this.createdDate = new Date()
+    this.fileName = fileName;
+    this.liveVer = this.fetchLiveVersion(root);
+    this.tracks = this.fetchTracks(root);
+    this.tracks.push(this.fetchMasterTrack(root));
+    this.createdDate = new Date();
   }
 
   private fetchLiveVersion(root: Element): string {
@@ -29,15 +29,15 @@ export class ALSReport {
       const track = TrackParser.parseTrack(trackNodes[i]);
       tracks.push(track);
     }
-  
+
     return tracks;
   }
 
-  private fetchMasterTrack(root:Element): Track {
-    const masterNode = root.getElementsByTagName("MasterTrack").item(0)
+  private fetchMasterTrack(root: Element): Track {
+    const masterNode = root.getElementsByTagName("MasterTrack").item(0);
     if (masterNode) {
-      return TrackParser.parseTrack(masterNode)
+      return TrackParser.parseTrack(masterNode);
     }
-    throw new Error("No Master Track found")
+    throw new Error("No Master Track found");
   }
 }
