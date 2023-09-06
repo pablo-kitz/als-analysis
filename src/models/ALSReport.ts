@@ -1,3 +1,4 @@
+import { AudioClip } from "./Audio";
 import { TrackParser, Track } from "./Track";
 
 export class ALSReport {
@@ -5,6 +6,7 @@ export class ALSReport {
   liveVer: string;
   tracks: Track[];
   createdDate: Date;
+  externalAudios: AudioClip[];
 
   constructor(fileName: string, root: Element) {
     this.fileName = fileName;
@@ -12,6 +14,7 @@ export class ALSReport {
     this.tracks = this.fetchTracks(root);
     this.tracks.push(this.fetchMasterTrack(root));
     this.createdDate = new Date();
+    this.externalAudios = this.scanAudiosDir();
   }
 
   private fetchLiveVersion(root: Element): string {
@@ -39,5 +42,18 @@ export class ALSReport {
       return TrackParser.parseTrack(masterNode);
     }
     throw new Error("No Master Track found");
+  }
+
+  private scanAudiosDir(): AudioClip[] {
+    let externalAudios = [];
+
+    for (const track of this.tracks) {
+      for (const audio of track.audios) {
+        if (!audio.isOnRecommendedDir) {
+          externalAudios.push(audio);
+        }
+      }
+    }
+    return externalAudios;
   }
 }

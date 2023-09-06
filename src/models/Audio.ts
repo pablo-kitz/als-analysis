@@ -1,10 +1,12 @@
-export interface Audio {
+export interface AudioClip {
+  audioName: string;
   view: "session" | "arrangement";
+  isOnRecommendedDir: boolean;
   location: string;
 }
 
 export class AudioParser {
-  static parseAudio(node: Element): Audio {
+  static parseAudio(node: Element): AudioClip {
     const sessionAudioNode = node.closest("ClipSlotList");
     const arrangementAudioNode = node.closest("Events");
     if (sessionAudioNode) {
@@ -18,17 +20,20 @@ export class AudioParser {
   }
 }
 
-export class AudioFactory implements Audio {
+export class AudioFactory implements AudioClip {
+  audioName: string;
   view: "session" | "arrangement";
-  location: string = "";
+  isOnRecommendedDir: boolean;
+  location: string;
   // TODO: Implement other properties
-  // isOnRecommendedDir: boolean;
   // isEnabled: boolean;
   // isFrozen: boolean;
 
   constructor(view: "session" | "arrangement", node: Element) {
     this.view = view;
     this.location = this.fetchAudioLocation(node);
+    this.isOnRecommendedDir = this.checkAudioDir();
+    this.audioName = this.fetchAudioName();
   }
 
   fetchAudioLocation(node: Element): string {
@@ -42,6 +47,21 @@ export class AudioFactory implements Audio {
       throw new Error("Could not find Clip Location");
     }
     return location;
+  }
+
+  checkAudioDir(): boolean {
+    return this.location.includes("User Library");
+  }
+
+  fetchAudioName(): string {
+    const pattern = "([^/]+)$";
+    let match = this.location.match(pattern);
+
+    if (match) {
+      return match[1];
+    } else {
+      return this.location;
+    }
   }
 }
 

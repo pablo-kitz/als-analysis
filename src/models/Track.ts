@@ -1,4 +1,4 @@
-import { AudioParser, Audio } from "./Audio";
+import { AudioParser, AudioClip } from "./Audio";
 import { DeviceParser, Device } from "./Device";
 
 export interface Track {
@@ -6,7 +6,7 @@ export interface Track {
   type: "audio" | "midi" | "group" | "return" | "master" | "chain";
   groupId: number | null;
   devices: Device[];
-  audios: Audio[];
+  audios: AudioClip[];
 }
 
 export class TrackParser {
@@ -37,7 +37,7 @@ abstract class TrackFactory implements Track {
   groupId: number | null = null;
   type: "audio" | "midi" | "group" | "return" | "master" | "chain";
   devices: Device[] = [];
-  audios: Audio[] = [];
+  audios: AudioClip[] = [];
 
   constructor(
     type: "audio" | "midi" | "group" | "return" | "master" | "chain",
@@ -90,7 +90,7 @@ abstract class TrackFactory implements Track {
     return devices;
   }
 
-  protected fetchAudios(node: Element): Audio[] {
+  protected fetchAudios(node: Element): AudioClip[] {
     node;
     return [];
   }
@@ -101,8 +101,8 @@ export class AudioTrack extends TrackFactory {
     super("audio", node);
   }
 
-  protected fetchAudios(node: Element): Audio[] {
-    const audios: Audio[] = [];
+  protected fetchAudios(node: Element): AudioClip[] {
+    const audios: AudioClip[] = [];
 
     const audioClips = node.getElementsByTagName("AudioClip");
     for (let i = 0; i < audioClips.length; i++) {
