@@ -102,15 +102,20 @@ export class AudioTrack extends TrackFactory {
   }
 
   protected fetchAudios(node: Element): AudioClip[] {
-    const audios: AudioClip[] = [];
+    const fetchedAudios: AudioClip[] = [];
 
     const audioClips = node.getElementsByTagName("AudioClip");
-    for (let i = 0; i < audioClips.length; i++) {
-      const audio = AudioParser.parseAudio(audioClips[i]);
-      audios.push(audio);
-    }
 
-    return audios;
+    for (let i = 0; i < audioClips.length; i++) {
+      const currAudio = AudioParser.parseAudio(audioClips[i]);
+      if (
+        !fetchedAudios.some(
+          (audioClip) => audioClip.location == currAudio.location,
+        )
+      )
+        fetchedAudios.push(currAudio);
+    }
+    return fetchedAudios;
   }
 }
 

@@ -9,7 +9,6 @@ import { InfoPill } from "./info-pill";
 dayjs.extend(relativeTime);
 
 export function ReportCard({ report }: { report: ALSReport }) {
-  const shortFileName = report.fileName.replace(".als", "");
   const audioSum = sumAudios(report);
   const deviceSum = sumDevices(report);
 
@@ -43,7 +42,7 @@ export function ReportCard({ report }: { report: ALSReport }) {
           <File />
         </div>
         <h2 className="ml-2 min-w-[100px] text-2xl font-semibold text-primary">
-          {shortFileName}
+          {report.shortFileName}
         </h2>
       </a>
       <div className="mx-auto flex items-center">

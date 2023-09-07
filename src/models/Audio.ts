@@ -1,8 +1,9 @@
 export interface AudioClip {
-  audioName: string;
+  audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean;
+  isOnRecommendedDir: boolean | undefined;
   location: string;
+  checkAudioDir(shortFileName: string): boolean;
 }
 
 export class AudioParser {
@@ -21,9 +22,10 @@ export class AudioParser {
 }
 
 export class AudioFactory implements AudioClip {
-  audioName: string;
+  name: string;
+  audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean;
+  isOnRecommendedDir: boolean | undefined;
   location: string;
   // TODO: Implement other properties
   // isEnabled: boolean;
@@ -31,29 +33,51 @@ export class AudioFactory implements AudioClip {
 
   constructor(view: "session" | "arrangement", node: Element) {
     this.view = view;
+    this.name = this.fetchAudioName(node);
     this.location = this.fetchAudioLocation(node);
-    this.isOnRecommendedDir = this.checkAudioDir();
-    this.audioName = this.fetchAudioName();
+    this.audioFileName = this.fetchAudioFileName();
+  }
+
+  fetchAudioName(node: Element): string {
+    const name = node
+      .getElementsByTagName("Name")
+      .item(0)
+      ?.getAttribute("Value");
+
+    if (typeof name !== "string") {
+      throw new Error("Could not find Audio Clip Name");
+    }
+
+    return name;
   }
 
   fetchAudioLocation(node: Element): string {
     const location = node
-      .getElementsByTagName("OriginalFileRef")
+      .getElementsByTagName("FileRef")
       .item(0)
       ?.getElementsByTagName("Path")
       .item(0)
       ?.getAttribute("Value");
+
     if (typeof location !== "string") {
       throw new Error("Could not find Clip Location");
     }
+
     return location;
   }
 
-  checkAudioDir(): boolean {
-    return this.location.includes("User Library");
+  public checkAudioDir(shortFileName: string): boolean {
+    if (
+      this.location.includes("User Library") ||
+      this.location.includes(shortFileName)
+    ) {
+      this.isOnRecommendedDir = true;
+      return true;
+    }
+    return false;
   }
 
-  fetchAudioName(): string {
+  fetchAudioFileName(): string {
     const pattern = "([^/]+)$";
     let match = this.location.match(pattern);
 

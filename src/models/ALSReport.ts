@@ -3,6 +3,7 @@ import { TrackParser, Track } from "./Track";
 
 export class ALSReport {
   fileName: string;
+  shortFileName: string;
   liveVer: string;
   tracks: Track[];
   createdDate: Date;
@@ -10,6 +11,7 @@ export class ALSReport {
 
   constructor(fileName: string, root: Element) {
     this.fileName = fileName;
+    this.shortFileName = this.fileName.replace(".als", "");
     this.liveVer = this.fetchLiveVersion(root);
     this.tracks = this.fetchTracks(root);
     this.tracks.push(this.fetchMasterTrack(root));
@@ -49,7 +51,7 @@ export class ALSReport {
 
     for (const track of this.tracks) {
       for (const audio of track.audios) {
-        if (!audio.isOnRecommendedDir) {
+        if (!audio.checkAudioDir(this.shortFileName)) {
           externalAudios.push(audio);
         }
       }
