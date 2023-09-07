@@ -1,4 +1,5 @@
 import { AudioClip } from "./Audio";
+import { Device } from "./Device";
 import { TrackParser, Track } from "./Track";
 
 export class ALSReport {
@@ -8,6 +9,7 @@ export class ALSReport {
   tracks: Track[];
   createdDate: Date;
   externalAudios: AudioClip[];
+  nonNativeDevices: Device[];
 
   constructor(fileName: string, root: Element) {
     this.fileName = fileName;
@@ -17,6 +19,7 @@ export class ALSReport {
     this.tracks.push(this.fetchMasterTrack(root));
     this.createdDate = new Date();
     this.externalAudios = this.scanAudiosDir();
+    this.nonNativeDevices = this.scanDevices();
   }
 
   private fetchLiveVersion(root: Element): string {
@@ -57,5 +60,18 @@ export class ALSReport {
       }
     }
     return externalAudios;
+  }
+
+  private scanDevices(): Device[] {
+    let nonNativeDevices = [];
+
+    for (const track of this.tracks) {
+      for (const device of track.devices) {
+        if (!(device.type == "abletonDevice")) {
+          nonNativeDevices.push(device);
+        }
+      }
+    }
+    return nonNativeDevices;
   }
 }
