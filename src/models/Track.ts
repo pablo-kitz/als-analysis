@@ -62,11 +62,11 @@ abstract class TrackFactory implements Track {
     return name;
   }
 
-  private fetchGroupId(node: Element): number | null {
+  protected fetchGroupId(node: Element): number | null {
     const groupId = node
       .getElementsByTagName("TrackGroupId")
       .item(0)
-      ?.getAttribute("TrackGroupId");
+      ?.getAttribute("Value");
     if (typeof groupId !== "string" || groupId === "-1" || groupId === null) {
       return null;
     }
@@ -128,6 +128,15 @@ export class MidiTrack extends TrackFactory {
 export class GroupTrack extends TrackFactory {
   constructor(node: Element) {
     super("group", node);
+  }
+
+  protected fetchGroupId(node: Element): number | null {
+    const groupId = node.getAttribute("Id");
+    if (typeof groupId !== "string" || groupId === "-1" || groupId === null) {
+      return null;
+    }
+
+    return parseInt(groupId, 10);
   }
 }
 
