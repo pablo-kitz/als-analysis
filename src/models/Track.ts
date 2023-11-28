@@ -1,4 +1,4 @@
-import { AudioParser, Audio } from "./Audio";
+import { AudioParser, AudioClip } from "./Audio";
 import { DeviceParser, Device } from "./Device";
 
 export interface Track {
@@ -6,7 +6,7 @@ export interface Track {
   type: "audio" | "midi" | "group" | "return" | "master" | "chain";
   groupId: number | null;
   devices: Device[];
-  audios: Audio[];
+  audios: AudioClip[];
 }
 
 export class TrackParser {
@@ -37,7 +37,7 @@ abstract class TrackFactory implements Track {
   groupId: number | null = null;
   type: "audio" | "midi" | "group" | "return" | "master" | "chain";
   devices: Device[] = [];
-  audios: Audio[] = [];
+  audios: AudioClip[] = [];
 
   constructor(
     type: "audio" | "midi" | "group" | "return" | "master" | "chain",
@@ -62,11 +62,11 @@ abstract class TrackFactory implements Track {
     return name;
   }
 
-  private fetchGroupId(node: Element): number | null {
+  protected fetchGroupId(node: Element): number | null {
     const groupId = node
       .getElementsByTagName("TrackGroupId")
       .item(0)
-      ?.getAttribute("TrackGroupId");
+      ?.getAttribute("Value");
     if (typeof groupId !== "string" || groupId === "-1" || groupId === null) {
       return null;
     }
@@ -90,7 +90,7 @@ abstract class TrackFactory implements Track {
     return devices;
   }
 
-  protected fetchAudios(node: Element): Audio[] {
+  protected fetchAudios(node: Element): AudioClip[] {
     node;
     return [];
   }
@@ -101,16 +101,21 @@ export class AudioTrack extends TrackFactory {
     super("audio", node);
   }
 
-  protected fetchAudios(node: Element): Audio[] {
-    const audios: Audio[] = [];
+  protected fetchAudios(node: Element): AudioClip[] {
+    const fetchedAudios: AudioClip[] = [];
 
     const audioClips = node.getElementsByTagName("AudioClip");
-    for (let i = 0; i < audioClips.length; i++) {
-      const audio = AudioParser.parseAudio(audioClips[i]);
-      audios.push(audio);
-    }
 
-    return audios;
+    for (let i = 0; i < audioClips.length; i++) {
+      const currAudio = AudioParser.parseAudio(audioClips[i]);
+      if (
+        !fetchedAudios.some(
+          (audioClip) => audioClip.location == currAudio.location,
+        )
+      )
+        fetchedAudios.push(currAudio);
+    }
+    return fetchedAudios;
   }
 }
 
@@ -123,6 +128,15 @@ export class MidiTrack extends TrackFactory {
 export class GroupTrack extends TrackFactory {
   constructor(node: Element) {
     super("group", node);
+  }
+
+  protected fetchGroupId(node: Element): number | null {
+    const groupId = node.getAttribute("Id");
+    if (typeof groupId !== "string" || groupId === "-1" || groupId === null) {
+      return null;
+    }
+
+    return parseInt(groupId, 10);
   }
 }
 

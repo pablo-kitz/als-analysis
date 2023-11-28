@@ -31,6 +31,8 @@ export class DeviceParser {
       case "MxDeviceMidiEffect":
       case "MxDeviceInstrument":
       case "MxDeviceAudioEffect":
+        // TODO:
+        // Check for possible audio samples
         return new M4LPluginDevice(node);
       case "InstrumentGroupDevice":
       case "AudioEffectGroupDevice":
@@ -65,8 +67,8 @@ abstract class DeviceFactory implements Device {
     node: Element,
   ) {
     this.type = type;
-    this.name = this.fetchDeviceName(node);
     this.path = this.fetchDevicePath(node);
+    this.name = this.fetchDeviceName(node);
   }
 
   protected abstract fetchDeviceName(node: Element): string;
@@ -84,7 +86,8 @@ export class VstPluginDevice extends DeviceFactory {
 
   protected fetchDeviceName(node: Element): string {
     const deviceName =
-      node.getElementsByTagName("Path").item(0)?.getAttribute("Value") ?? "";
+      node.getElementsByTagName("PlugName").item(0)?.getAttribute("Value") ??
+      "";
     return deviceName;
   }
 }
@@ -96,7 +99,7 @@ export class Vst3PluginDevice extends DeviceFactory {
 
   protected fetchDeviceName(node: Element): string {
     const deviceName =
-      node.getElementsByTagName("Name").item(0)?.getAttribute("Value") ?? "";
+      node.getElementsByTagName("Name").item(1)?.getAttribute("Value") ?? "";
     return deviceName;
   }
 }
@@ -117,9 +120,14 @@ export class M4LPluginDevice extends DeviceFactory {
   }
 
   protected fetchDeviceName(node: Element): string {
-    const deviceName =
-      node.getElementsByTagName("Path").item(0)?.getAttribute("Value") ?? "";
-    return deviceName;
+    const regexPattern = "^(?:.*/)?([^/]+?|)(?=(?:.[^/.]*)?$)";
+    const deviceNameMatch = this.path.match(regexPattern);
+
+    if (deviceNameMatch) {
+      return deviceNameMatch[1];
+    } else {
+      return "";
+    }
   }
 }
 
@@ -136,7 +144,6 @@ export class AbletonDevice extends DeviceFactory {
 
 export class AbletonGroupDevice extends DeviceFactory {
   chains: Track[] = [];
-  //TODO: implement device path
   constructor(node: Element) {
     super("abletonDevice", node);
     this.chains = this.fetchChains(node);
