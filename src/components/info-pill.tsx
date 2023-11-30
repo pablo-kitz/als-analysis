@@ -1,40 +1,39 @@
-import { CassetteTape, ListMusic, Tv2 } from "lucide-react";
+import { Button, ButtonProps } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { MouseEventHandler, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type InfoPillProps = {
-  info: number;
-  icon: "track" | "audio" | "device";
+  pillNumber: number;
+  tooltipText: string;
+  variant?: ButtonProps["variant"];
+  children: ReactNode;
+  onClick?: MouseEventHandler<HTMLButtonElement> | undefined;
 };
 
-export function InfoPill({ info, icon }: InfoPillProps) {
-  let iconComponent;
-  let iconTooltip;
-
-  switch (icon) {
-    case "track":
-      iconComponent = <ListMusic className="h-full" />;
-      iconTooltip = "Number of Tracks";
-      break;
-    case "audio":
-      iconComponent = <CassetteTape className="h-full" />;
-      iconTooltip = "Number of Audio Files";
-      break;
-    case "device":
-      iconComponent = <Tv2 className="h-full" />;
-      iconTooltip = "Number of non-Ableton Devices";
-      break;
-  }
+export function InfoPill({
+  pillNumber,
+  tooltipText,
+  variant,
+  children,
+  onClick,
+}: InfoPillProps) {
+  if (!pillNumber) return null;
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="ml-8 flex h-8 w-[80px] items-center justify-around gap-2 rounded bg-accent px-2 text-accent-foreground">
-          <span className="align-middle">{info}</span>
-          {iconComponent}
-        </div>
+        <Button
+          className={cn("flex w-[80px] justify-around gap-2 px-2")}
+          variant={variant}
+          onClick={onClick}
+        >
+          <span className="align-middle">{pillNumber}</span>
+          {children}
+        </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>{iconTooltip}</p>
+        <p>{tooltipText}</p>
       </TooltipContent>
     </Tooltip>
   );

@@ -17,7 +17,6 @@ export class AudioParser {
     } else {
       throw new Error("Audio out of bounds");
     }
-    //TODO: Define audio cases / session arrangement and instrumets/effects
   }
 }
 
@@ -27,9 +26,6 @@ export class AudioFactory implements AudioClip {
   view: "session" | "arrangement";
   isOnRecommendedDir: boolean | undefined;
   location: string;
-  // TODO: Implement other properties
-  // isEnabled: boolean;
-  // isFrozen: boolean;
 
   constructor(view: "session" | "arrangement", node: Element) {
     this.view = view;
@@ -79,7 +75,7 @@ export class AudioFactory implements AudioClip {
 
   fetchAudioFileName(): string {
     const pattern = "([^/]+)$";
-    let match = this.location.match(pattern);
+    const match = this.location.match(pattern);
 
     if (match) {
       return match[1];

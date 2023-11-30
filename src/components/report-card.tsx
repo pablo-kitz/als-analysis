@@ -1,48 +1,51 @@
+import { File } from "lucide-react";
+import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Badge } from "./ui/badge";
 import { ALSReport } from "@/models/ALSReport";
 
-import { AlertTriangle, File, Trash2Icon } from "lucide-react";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { InfoPill } from "./info-pill";
-
-dayjs.extend(relativeTime);
-
-export function ReportCard({ report }: { report: ALSReport }) {
-  const audioSum = sumAudios(report);
-
-  function sumAudios(report: ALSReport) {
-    let count = 0;
-    for (let i = 0; i < report.tracks.length; i++) {
-      const curr = report.tracks[i];
-      count += curr.audios.length;
-    }
-    return count;
-  }
-
+export function ReportCard({
+  report,
+  selectReport,
+}: {
+  report: ALSReport;
+  selectReport: (report: ALSReport) => void;
+}) {
   return (
-    <div className="grid grid-cols-3 px-8 py-1 lg:px-16">
-      <a title={report.liveVer} className="flex items-center">
-        <div className="flex h-8 w-8 items-center justify-center rounded bg-secondary p-1 text-secondary-foreground">
-          <File />
-        </div>
-        <h2 className="ml-2 min-w-[100px] text-2xl font-semibold text-primary">
-          {report.shortFileName}
-        </h2>
-      </a>
-      <div className="mx-auto flex items-center">
-        <InfoPill info={report.tracks.length} icon="track" />
-        <InfoPill info={audioSum} icon="audio" />
-        <InfoPill info={report.nonNativeDevices.length} icon="device" />
+    <Button
+      key={report.fileName}
+      variant="outline"
+      className="z-20 flex h-32 w-64 flex-col items-start justify-normal gap-1 rounded-lg bg-card p-2 text-card-foreground shadow hover:shadow-lg"
+      onClick={() => selectReport(report)}
+    >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex w-full items-center gap-3">
+            <div className="p-1">
+              <File />
+            </div>
+            <div className="w-fit truncate pr-2 font-semibold text-primary">
+              {report.shortFileName}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          {`${report.fileName} - ${report.liveVer}`}
+        </TooltipContent>
+      </Tooltip>
+      <div className="ml-auto">
+        <Badge variant="outline">Tracks - {report.tracks.length}</Badge>
       </div>
-      <div className="ml-auto flex items-center space-x-2.5 overflow-hidden">
-        <p className="text-[0.6rem] font-thin text-muted-foreground lg:text-xs">
-          uploaded {dayjs(report.createdDate).fromNow()}
-        </p>
-        <AlertTriangle className="h-8 w-8" />
-        <div className="h-1 w-1 rounded-full bg-muted-foreground"></div>
-        <Trash2Icon className="h-8 w-8 rounded bg-destructive p-1 text-destructive-foreground" />
+      <div className="ml-auto">
+        <Badge variant="outline">
+          External Devices - {report.nonNativeDevices.length}
+        </Badge>
       </div>
-    </div>
+      <div className="ml-auto">
+        <Badge variant="destructive">
+          External Audios - {report.externalAudios.length}
+        </Badge>
+      </div>
+    </Button>
   );
 }
