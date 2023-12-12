@@ -10,7 +10,7 @@ export type ToggleMenus = "tracks" | "devices" | "audios" | "";
 export const Main = () => {
   // Reports state / actions
   const [state, dispatch] = useReducer(filesReducer, {
-    reports: [] as ALSReport[],
+    reports: JSON.parse(localStorage.getItem("reports") || "[]"),
     isLoading: false,
     replaceFile: {
       isOpen: false,

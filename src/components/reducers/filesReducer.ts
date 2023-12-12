@@ -38,9 +38,11 @@ const filesReducer = (state: State, action: FileAction): State => {
     case "ADD":
       try {
         checkDuplicateReport(state.reports, action.payload);
+        const newReports = state.reports.concat(action.payload);
+        localStorage.setItem("reports", JSON.stringify(newReports));
         return {
           ...state,
-          reports: [...state.reports, ...action.payload],
+          reports: [...newReports],
           isLoading: false,
         };
       } catch (error) {
@@ -58,7 +60,7 @@ const filesReducer = (state: State, action: FileAction): State => {
         ...state,
         isLoading: true,
       };
-    case "REPLACE":
+    case "REPLACE": {
       if (action.payload.length === 0) {
         return {
           ...state,
@@ -68,19 +70,23 @@ const filesReducer = (state: State, action: FileAction): State => {
           },
         };
       }
+      const replacedReports = state.reports.map((report) => {
+        const foundReplacement = action.payload.find(
+          (newReport) => newReport.fileName === report.fileName,
+        );
+        return foundReplacement || report;
+      });
+
+      localStorage.setItem("reports", JSON.stringify(replacedReports));
       return {
         ...state,
-        reports: state.reports.map((report) => {
-          const foundReplacement = action.payload.find(
-            (newReport) => newReport.fileName === report.fileName,
-          );
-          return foundReplacement || report;
-        }),
+        reports: replacedReports,
         replaceFile: {
           isOpen: false,
           duplicateReports: [] as ALSReport[],
         },
       };
+    }
     default:
       return state;
   }
