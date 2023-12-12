@@ -7,6 +7,9 @@ import { Device } from "@/models/Device";
 import { AudioClip } from "@/models/Audio";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
+import { Button, buttonVariants } from "./ui/button";
+import { Trash } from "lucide-react";
+import { toggleVariants } from "./ui/toggle";
 
 export type ToggleMenus = "tracks" | "devices" | "audios" | "";
 
@@ -62,10 +65,10 @@ export function ReportLine({
 
   return (
     <>
-      <div className="border-secondary/50 grid w-full grid-cols-2 border-t px-4 py-2 first:border-t-0">
+      <div className="border-secondary/50 group grid w-full grid-cols-2 border-t px-4 py-2 first:border-t-0">
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="my-auto mr-auto font-bold tracking-wide">
+            <div className="my-auto mr-auto font-bold tracking-wide ">
               {report.shortFileName}
             </div>
           </TooltipTrigger>
@@ -73,34 +76,43 @@ export function ReportLine({
             {`${report.fileName} - ${report.liveVer}`}
           </TooltipContent>
         </Tooltip>
-        <ToggleGroup
-          value={value}
-          onValueChange={(value) => handleToggleSelect(value as ToggleMenus)}
-          type="single"
-          className="mr-16 flex justify-around gap-8"
-        >
-          <ToggleGroupItem
-            variant={"outline"}
-            className="shadow-foreground/10 w-28 shadow-md"
-            value="tracks"
+        <div className="flex">
+          <ToggleGroup
+            value={value}
+            onValueChange={(value) => handleToggleSelect(value as ToggleMenus)}
+            type="single"
+            className="mr-16 flex flex-grow justify-around gap-8"
           >
-            {report.tracks.length} Tracks
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            variant={"outline"}
-            className="shadow-foreground/10 w-28 shadow-md"
-            value="devices"
+            <ToggleGroupItem
+              variant={"outline"}
+              className="shadow-foreground/10 w-28 shadow-md"
+              value="tracks"
+            >
+              {report.tracks.length} Tracks
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              variant={"outline"}
+              className="shadow-foreground/10 w-28 shadow-md"
+              value="devices"
+            >
+              {report.devices.length} Devices
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              variant={"outline"}
+              className="shadow-foreground/10 w-28 shadow-md"
+              value="audios"
+            >
+              {report.audios.length} Audios
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Button
+            variant="outline"
+            size="icon"
+            className="opacity-0 transition-opacity duration-500 group-hover:opacity-100 "
           >
-            {report.devices.length} Devices
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            variant={"outline"}
-            className="shadow-foreground/10 w-28 shadow-md"
-            value="audios"
-          >
-            {report.audios.length} Audios
-          </ToggleGroupItem>
-        </ToggleGroup>
+            <Trash />
+          </Button>
+        </div>
       </div>
       <div
         className={`overflow-scroll shadow-inner transition-[height] ${
@@ -117,11 +129,33 @@ ReportLine.Skeleton = () => {
   return (
     <>
       <div className="border-secondary/50 grid w-full grid-cols-2 border-t px-4 py-2">
-        <Skeleton className="h-8 w-[300px]" />
-        <div className="mr-16 flex justify-around gap-8">
-          <Skeleton className="h-8 w-28" />
-          <Skeleton className="h-8 w-28" />
-          <Skeleton className="h-8 w-28" />
+        <Skeleton className="my-auto h-8 w-[300px]" />
+        <div className="flex">
+          <div className="mr-16 flex flex-grow justify-around gap-8">
+            <Skeleton
+              className={cn(
+                toggleVariants({ variant: "outline", className: "w-28" }),
+              )}
+            />
+            <Skeleton
+              className={cn(
+                toggleVariants({ variant: "outline", className: "w-28" }),
+              )}
+            />
+            <Skeleton
+              className={cn(
+                toggleVariants({ variant: "outline", className: "w-28" }),
+              )}
+            />
+          </div>
+          <Skeleton
+            className={cn(
+              buttonVariants({
+                variant: "outline",
+                size: "icon",
+              }),
+            )}
+          />
         </div>
       </div>
     </>
@@ -137,7 +171,7 @@ ReportLine.Detail = ({
 }) => {
   return (
     <>
-      <div className="divide-secondary-foreground/20 grid grid-cols-3 bg-accent px-6 text-xs text-primary">
+      <div className="divide-secondary-foreground/20 sticky top-0 grid grid-cols-3 bg-accent px-6 text-xs text-primary shadow-sm">
         <div>{cols[0]}</div>
         <div className="text-center">{cols[1]}</div>
         <div className="text-center">{cols[2]}</div>
