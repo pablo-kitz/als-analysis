@@ -31,6 +31,8 @@ export function ReportLine({
     }
   }, [selected, lineKey]);
 
+  const isOpen = value ? true : false;
+
   const toggleContent = {
     tracks: (
       <ReportLine.Detail
@@ -100,7 +102,13 @@ export function ReportLine({
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-      {toggleContent}
+      <div
+        className={`overflow-scroll shadow-inner transition-[height] ${
+          isOpen ? "h-[270px]" : "h-0"
+        }`}
+      >
+        {toggleContent}
+      </div>
     </>
   );
 }
