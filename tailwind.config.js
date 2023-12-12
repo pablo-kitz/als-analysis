@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        satoshi: ['Satoshi', 'sans']
+        satoshi: ["Satoshi", "sans"],
       },
       colors: {
         border: "hsl(var(--border))",
