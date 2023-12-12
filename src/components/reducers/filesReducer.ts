@@ -14,11 +14,30 @@ interface ReplaceFile {
   payload: ALSReport[];
 }
 
-export type FileAction = AddFiles | ReplaceFile | Loading;
+interface DeleteFile {
+  type: "DELETE";
+  payload: number;
+}
+
+interface HandleDelete {
+  type: "HANDLE_DELETE";
+  payload: number;
+}
+
+export type FileAction =
+  | AddFiles
+  | ReplaceFile
+  | HandleDelete
+  | DeleteFile
+  | Loading;
 
 interface State {
   reports: ALSReport[];
   isLoading: boolean;
+  deleteReport: {
+    deleteModal: boolean;
+    deleteIndex: number;
+  };
   replaceFile: {
     isOpen: boolean;
     duplicateReports: ALSReport[];
@@ -85,6 +104,28 @@ const filesReducer = (state: State, action: FileAction): State => {
           isOpen: false,
           duplicateReports: [] as ALSReport[],
         },
+      };
+    }
+    case "HANDLE_DELETE":
+      return {
+        ...state,
+        deleteReport: {
+          deleteModal: !state.deleteReport.deleteModal,
+          deleteIndex: action.payload,
+        },
+      };
+    case "DELETE": {
+      const newReports = state.reports.filter(
+        (_, index) => index !== action.payload,
+      );
+      localStorage.setItem("reports", JSON.stringify(newReports));
+      return {
+        ...state,
+        deleteReport: {
+          deleteModal: !state.deleteReport.deleteModal,
+          deleteIndex: -1,
+        },
+        reports: newReports,
       };
     }
     default:

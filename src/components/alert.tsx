@@ -10,6 +10,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog";
+import { Button } from "./ui/button";
+
+// TODO: refactor to have a base alert and subcomponents for each case
 
 interface AlertProps {
   open: boolean;
@@ -68,3 +71,44 @@ export function Alert({ open, dispatch, duplicates }: AlertProps) {
     </>
   );
 }
+
+interface DeleteAlertProps {
+  open: boolean;
+  dispatch: React.Dispatch<FileAction>;
+  deleteIndex: number;
+}
+
+Alert.DeleteReport = ({ open, dispatch, deleteIndex }: DeleteAlertProps) => {
+  const handleCancel = () => {
+    dispatch({ type: "HANDLE_DELETE", payload: 0 });
+  };
+
+  const handleReplace = () => {
+    dispatch({ type: "DELETE", payload: deleteIndex });
+  };
+  return (
+    <>
+      <AlertDialog open={open}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deleting report</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are deleting the selected report, this action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              asChild
+              className="bg-destructive/50 text-destructive-foreground hover:border-foreground hover:bg-destructive "
+              onClick={handleReplace}
+            >
+              <Button variant="destructive">Delete</Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};

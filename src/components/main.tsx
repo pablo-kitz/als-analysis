@@ -12,6 +12,10 @@ export const Main = () => {
   const [state, dispatch] = useReducer(filesReducer, {
     reports: JSON.parse(localStorage.getItem("reports") || "[]"),
     isLoading: false,
+    deleteReport: {
+      deleteModal: false,
+      deleteIndex: -1,
+    },
     replaceFile: {
       isOpen: false,
       duplicateReports: [] as ALSReport[],
@@ -29,6 +33,11 @@ export const Main = () => {
         dispatch={dispatch}
         duplicates={state.replaceFile.duplicateReports}
       />
+      <Alert.DeleteReport
+        open={state.deleteReport.deleteModal}
+        dispatch={dispatch}
+        deleteIndex={state.deleteReport.deleteIndex}
+      />
       {hasInput || state.isLoading ? (
         <div className="border-secondary-foreground/20 bg-card/40 z-10 m-2 flex h-full max-h-full flex-1 flex-col justify-start overflow-y-scroll rounded-lg border shadow-inner">
           <div className="bg-secondary/20 max-h-full overflow-scroll border-b">
@@ -39,6 +48,9 @@ export const Main = () => {
                 report={report}
                 selected={selected}
                 setSelected={(lineKey) => setSelected(lineKey)}
+                onDelete={() =>
+                  dispatch({ type: "HANDLE_DELETE", payload: index })
+                }
               />
             ))}
             {state.isLoading && <ReportLine.Skeleton />}

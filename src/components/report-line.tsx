@@ -18,6 +18,7 @@ type ReportLineProps = {
   report: ALSReport;
   selected: number | undefined;
   setSelected: (lineKey: number) => void;
+  onDelete: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export function ReportLine({
@@ -25,6 +26,7 @@ export function ReportLine({
   report,
   selected,
   setSelected,
+  onDelete,
 }: ReportLineProps) {
   const [value, setValue] = useState<ToggleMenus>("");
 
