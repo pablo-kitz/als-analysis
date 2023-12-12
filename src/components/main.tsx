@@ -47,6 +47,7 @@ export const Main = () => {
             floatingDisplay={true}
             className="right-16 top-8"
             dispatch={dispatch}
+            isLoading={state.isLoading}
           />
         </div>
       ) : (

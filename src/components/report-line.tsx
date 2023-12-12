@@ -54,7 +54,7 @@ export function ReportLine({
   }[value];
 
   function handleToggleSelect(type: ToggleMenus) {
-    setValue(type);
+    setTimeout(() => setValue(type), 100);
     setSelected(lineKey);
   }
 

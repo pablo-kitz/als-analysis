@@ -3,19 +3,21 @@ import { useState, type ChangeEvent, type DragEvent } from "react";
 import { cn } from "@/lib/utils";
 import { FileAction } from "./reducers/filesReducer";
 import { AnalizeALSFile } from "@/models";
-import { FileUp } from "lucide-react";
+import { FileUp, Loader } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
   dispatch: React.Dispatch<FileAction>;
   floatingDisplay: boolean;
+  isLoading?: boolean;
 }
 
 const FileInput = ({
   className,
   dispatch,
   floatingDisplay,
+  isLoading,
   ...props
 }: InputProps) => {
   const { toast } = useToast();
@@ -119,7 +121,11 @@ const FileInput = ({
         >
           {floatingDisplay ? (
             <>
-              <FileUp className="hidden h-8 w-8 md:block" />
+              {isLoading ? (
+                <Loader className="animate-spin text-muted-foreground" />
+              ) : (
+                <FileUp className="hidden h-8 w-8 md:block" />
+              )}
               <input
                 {...props}
                 multiple
