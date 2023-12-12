@@ -1,6 +1,6 @@
 import { ALSReport } from "@/models/ALSReport";
 import { FileInput } from "./file-input";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import filesReducer from "./reducers/filesReducer";
 import { ReportLine } from "./report-line";
 import { Alert } from "./alert";
@@ -8,6 +8,7 @@ import { Alert } from "./alert";
 export type ToggleMenus = "tracks" | "devices" | "audios" | "";
 
 export const Main = () => {
+  // Reports state / actions
   const [state, dispatch] = useReducer(filesReducer, {
     reports: [] as ALSReport[],
     isLoading: false,
@@ -16,6 +17,8 @@ export const Main = () => {
       duplicateReports: [] as ALSReport[],
     },
   });
+  // Menus state
+  const [selected, setSelected] = useState<number>();
 
   const hasInput = state.reports.length != 0;
 
@@ -30,7 +33,13 @@ export const Main = () => {
         <div className="border-secondary-foreground/20 bg-card/40 z-10 m-2 flex h-full max-h-full flex-1 flex-col justify-start overflow-y-scroll rounded-lg border shadow-inner">
           <div className="bg-secondary/20 max-h-full overflow-scroll border-b">
             {state.reports.map((report, index) => (
-              <ReportLine key={index} report={report} />
+              <ReportLine
+                key={index}
+                lineKey={index}
+                report={report}
+                selected={selected}
+                setSelected={(lineKey) => setSelected(lineKey)}
+              />
             ))}
             {state.isLoading && <ReportLine.Skeleton />}
           </div>

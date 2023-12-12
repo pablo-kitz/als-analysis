@@ -1,7 +1,7 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { ALSReport } from "@/models/ALSReport";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Track } from "@/models/Track";
 import { Device } from "@/models/Device";
 import { AudioClip } from "@/models/Audio";
@@ -11,11 +11,25 @@ import { Skeleton } from "./ui/skeleton";
 export type ToggleMenus = "tracks" | "devices" | "audios" | "";
 
 type ReportLineProps = {
+  lineKey: number;
   report: ALSReport;
+  selected: number | undefined;
+  setSelected: (lineKey: number) => void;
 };
 
-export function ReportLine({ report }: ReportLineProps) {
+export function ReportLine({
+  lineKey,
+  report,
+  selected,
+  setSelected,
+}: ReportLineProps) {
   const [value, setValue] = useState<ToggleMenus>("");
+
+  useEffect(() => {
+    if (selected != lineKey) {
+      setValue("");
+    }
+  }, [selected, lineKey]);
 
   const toggleContent = {
     tracks: (
@@ -39,6 +53,11 @@ export function ReportLine({ report }: ReportLineProps) {
     "": null,
   }[value];
 
+  function handleToggleSelect(type: ToggleMenus) {
+    setValue(type);
+    setSelected(lineKey);
+  }
+
   return (
     <>
       <div className="border-secondary/50 grid w-full grid-cols-2 border-t px-4 py-2 first:border-t-0">
@@ -54,7 +73,7 @@ export function ReportLine({ report }: ReportLineProps) {
         </Tooltip>
         <ToggleGroup
           value={value}
-          onValueChange={(value) => setValue(value as ToggleMenus)}
+          onValueChange={(value) => handleToggleSelect(value as ToggleMenus)}
           type="single"
           className="mr-16 flex justify-around gap-8"
         >
