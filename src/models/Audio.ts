@@ -1,9 +1,8 @@
 export interface AudioClip {
   audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean | undefined;
+  isOnRecommendedDir: boolean;
   location: string;
-  checkAudioDir(shortFileName: string): boolean;
 }
 
 export class AudioParser {
@@ -24,7 +23,7 @@ export class AudioFactory implements AudioClip {
   name: string;
   audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean | undefined;
+  isOnRecommendedDir: boolean;
   location: string;
 
   constructor(view: "session" | "arrangement", node: Element) {
@@ -32,6 +31,7 @@ export class AudioFactory implements AudioClip {
     this.name = this.fetchAudioName(node);
     this.location = this.fetchAudioLocation(node);
     this.audioFileName = this.fetchAudioFileName();
+    this.isOnRecommendedDir = this.isAudioOnRecommendedDir();
   }
 
   fetchAudioName(node: Element): string {
@@ -62,15 +62,15 @@ export class AudioFactory implements AudioClip {
     return location;
   }
 
-  public checkAudioDir(shortFileName: string): boolean {
+  public isAudioOnRecommendedDir() {
     if (
       this.location.includes("User Library") ||
-      this.location.includes(shortFileName)
+      this.location.includes("Project")
     ) {
-      this.isOnRecommendedDir = true;
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   fetchAudioFileName(): string {
