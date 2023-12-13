@@ -181,36 +181,11 @@ ReportLine.Detail = ({
       {type.map((type, index) => (
         <div
           key={index}
-          className="divide-secondary-foreground/5 bg-card/20 shadow-foreground/10 grid max-h-6 grid-cols-3 divide-x divide-dashed px-6 shadow-sm"
+          className="grid max-h-6 grid-cols-3 divide-x divide-dashed divide-secondary-foreground/50 border-b border-muted bg-background px-6 shadow-sm shadow-foreground/50 last:border-b-0"
         >
-          <div
-            className={cn(
-              {
-                "text-destructive":
-                  "location" in type && !type.isOnRecommendedDir,
-              },
-              "font-bold",
-            )}
-          >
-            {getName(type)}
-          </div>
-          <div className="overflow-clip text-ellipsis text-center">
-            {getDetail1(type)}
-          </div>
-          {"location" in type ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="line-clamp-1 overflow-clip">
-                  {getDetail2(type)}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>{getDetail2(type)}</TooltipContent>
-            </Tooltip>
-          ) : (
-            <div className="line-clamp-1 overflow-clip text-right">
-              {getDetail2(type)}
-            </div>
-          )}
+          {getName(type)}
+          {getDetail1(type)}
+          {getDetail2(type)}
         </div>
       ))}
     </>
@@ -219,30 +194,89 @@ ReportLine.Detail = ({
 
 // utility functions to get correct field depending on detail type
 const getName = (type: Track | Device | AudioClip) => {
-  if ("name" in type) {
-    return type.name;
-  } else {
-    return type.audioFileName;
+  if ("devices" in type) {
+    return <div className={cn("font-bold")}>{type.name}</div>;
+  }
+  if ("path" in type) {
+    return <div className={cn("font-bold")}>{type.name}</div>;
+  }
+  if ("view" in type) {
+    return (
+      <div
+        className={cn("font-bold", {
+          "text-destructive": !type.isOnRecommendedDir,
+        })}
+      >
+        {type.audioFileName}
+      </div>
+    );
   }
 };
 
 const getDetail1 = (type: Track | Device | AudioClip) => {
   if ("type" in type) {
-    return type.type;
+    return (
+      <div className="overflow-clip text-ellipsis text-center">{type.type}</div>
+    );
   }
   if ("location" in type) {
-    return type.view;
+    return (
+      <div className="overflow-clip text-ellipsis text-center">{type.view}</div>
+    );
   }
 };
 
 const getDetail2 = (type: Track | Device | AudioClip) => {
+  // Track
   if ("devices" in type) {
-    return type.devices.length + " - " + type.audios.length;
+    return (
+      <div className="line-clamp-1 overflow-clip pl-8 text-right">
+        <Tooltip>
+          <TooltipTrigger>Devices: {type.devices.length}</TooltipTrigger>
+          {type.devices.length > 0 && (
+            <TooltipContent>
+              {type.devices.map((device, index) => (
+                <div key={index}>{device.name}</div>
+              ))}
+            </TooltipContent>
+          )}
+        </Tooltip>
+        {" - "}
+        <Tooltip>
+          <TooltipTrigger>Audios: {type.audios.length}</TooltipTrigger>
+          {type.audios.length > 0 && (
+            <TooltipContent>
+              {type.audios.map((audio, index) => (
+                <div key={index}>{audio.audioFileName}</div>
+              ))}
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </div>
+    );
   }
+  // Device
   if ("path" in type) {
-    return type.path;
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="line-clamp-1 overflow-clip pl-8">{type.path}</div>
+        </TooltipTrigger>
+        <TooltipContent>{type.path}</TooltipContent>
+      </Tooltip>
+    );
   }
+  // Audio
   if ("view" in type) {
-    return type.location;
+    return (
+      <div className="line-clamp-1 overflow-clip pl-8 text-right">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="line-clamp-1 overflow-clip">{type.location}</div>
+          </TooltipTrigger>
+          <TooltipContent>{type.location}</TooltipContent>
+        </Tooltip>
+      </div>
+    );
   }
 };
