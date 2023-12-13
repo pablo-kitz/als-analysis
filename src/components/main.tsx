@@ -39,8 +39,8 @@ export const Main = () => {
         deleteIndex={state.deleteReport.deleteIndex}
       />
       {hasInput || state.isLoading ? (
-        <div className="border-secondary-foreground/20 bg-card/40 z-10 m-2 flex h-full max-h-full flex-1 flex-col justify-start overflow-y-scroll rounded-lg border shadow-inner">
-          <div className="bg-secondary/20 max-h-full overflow-scroll border-b">
+        <div className="z-10 m-2 flex h-full max-h-full flex-1 flex-col justify-start overflow-y-scroll rounded-lg border border-secondary-foreground/20 bg-card/40 shadow-inner">
+          <div className="max-h-full overflow-scroll border-b bg-secondary/20">
             {state.reports.map((report, index) => (
               <ReportLine
                 key={index}

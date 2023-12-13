@@ -67,7 +67,7 @@ export function ReportLine({
 
   return (
     <>
-      <div className="border-secondary/50 group grid w-full grid-cols-2 border-t px-4 py-2 first:border-t-0">
+      <div className="group grid w-full grid-cols-2 border-t border-secondary/50 px-4 py-2 first:border-t-0">
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="my-auto mr-auto font-bold tracking-wide ">
@@ -87,21 +87,21 @@ export function ReportLine({
           >
             <ToggleGroupItem
               variant={"outline"}
-              className="shadow-foreground/10 w-28 shadow-md"
+              className="w-28 shadow-md shadow-foreground/10"
               value="tracks"
             >
               {report.tracks.length} Tracks
             </ToggleGroupItem>
             <ToggleGroupItem
               variant={"outline"}
-              className="shadow-foreground/10 w-28 shadow-md"
+              className="w-28 shadow-md shadow-foreground/10"
               value="devices"
             >
               {report.devices.length} Devices
             </ToggleGroupItem>
             <ToggleGroupItem
               variant={"outline"}
-              className="shadow-foreground/10 w-28 shadow-md"
+              className="w-28 shadow-md shadow-foreground/10"
               value="audios"
             >
               {report.audios.length} Audios
@@ -110,14 +110,15 @@ export function ReportLine({
           <Button
             variant="outline"
             size="icon"
-            className="opacity-0 transition-opacity duration-500 group-hover:opacity-100 "
+            className="opacity-0 transition-all duration-500 hover:bg-destructive/25 hover:text-destructive group-hover:opacity-100"
+            onClick={onDelete}
           >
             <Trash />
           </Button>
         </div>
       </div>
       <div
-        className={`overflow-scroll shadow-inner transition-[height] ${
+        className={`overflow-scroll bg-muted shadow-inner transition-[height] ${
           isOpen ? "h-[270px]" : "h-0"
         }`}
       >
@@ -130,7 +131,7 @@ export function ReportLine({
 ReportLine.Skeleton = () => {
   return (
     <>
-      <div className="border-secondary/50 grid w-full grid-cols-2 border-t px-4 py-2">
+      <div className="grid w-full grid-cols-2 border-t border-secondary/50 px-4 py-2">
         <Skeleton className="my-auto h-8 w-[300px]" />
         <div className="flex">
           <div className="mr-16 flex flex-grow justify-around gap-8">
@@ -173,7 +174,7 @@ ReportLine.Detail = ({
 }) => {
   return (
     <>
-      <div className="divide-secondary-foreground/20 sticky top-0 grid grid-cols-3 bg-accent px-6 text-xs text-primary shadow-sm">
+      <div className="sticky top-0 grid grid-cols-3 divide-secondary-foreground/20 bg-accent px-6 text-xs text-primary shadow-sm">
         <div>{cols[0]}</div>
         <div className="text-center">{cols[1]}</div>
         <div className="text-center">{cols[2]}</div>
