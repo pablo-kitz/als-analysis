@@ -1,9 +1,8 @@
 export interface AudioClip {
   audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean | undefined;
+  isOnRecommendedDir: boolean;
   location: string;
-  checkAudioDir(shortFileName: string): boolean;
 }
 
 export class AudioParser {
@@ -17,7 +16,6 @@ export class AudioParser {
     } else {
       throw new Error("Audio out of bounds");
     }
-    //TODO: Define audio cases / session arrangement and instrumets/effects
   }
 }
 
@@ -25,17 +23,15 @@ export class AudioFactory implements AudioClip {
   name: string;
   audioFileName: string;
   view: "session" | "arrangement";
-  isOnRecommendedDir: boolean | undefined;
+  isOnRecommendedDir: boolean;
   location: string;
-  // TODO: Implement other properties
-  // isEnabled: boolean;
-  // isFrozen: boolean;
 
   constructor(view: "session" | "arrangement", node: Element) {
     this.view = view;
     this.name = this.fetchAudioName(node);
     this.location = this.fetchAudioLocation(node);
     this.audioFileName = this.fetchAudioFileName();
+    this.isOnRecommendedDir = this.isAudioOnRecommendedDir();
   }
 
   fetchAudioName(node: Element): string {
@@ -66,20 +62,20 @@ export class AudioFactory implements AudioClip {
     return location;
   }
 
-  public checkAudioDir(shortFileName: string): boolean {
+  public isAudioOnRecommendedDir() {
     if (
       this.location.includes("User Library") ||
-      this.location.includes(shortFileName)
+      this.location.includes("Project")
     ) {
-      this.isOnRecommendedDir = true;
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   fetchAudioFileName(): string {
     const pattern = "([^/]+)$";
-    let match = this.location.match(pattern);
+    const match = this.location.match(pattern);
 
     if (match) {
       return match[1];

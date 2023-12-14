@@ -2,14 +2,8 @@ import pako from "pako";
 import { XMLValidator } from "fast-xml-parser";
 import { ALSReport } from "./ALSReport";
 
-export async function AnalizeALSFile(form: FormData): Promise<ALSReport> {
+export async function AnalizeALSFile(file: File): Promise<ALSReport> {
   try {
-    if (!form.has("file")) {
-      throw new Error("No file uploaded");
-    }
-
-    const file = form.get("file") as File;
-
     const fileArrayBuffer = await file.arrayBuffer();
     const unzippedContent = pako.inflate(fileArrayBuffer, { to: "string" });
 
@@ -18,7 +12,7 @@ export async function AnalizeALSFile(form: FormData): Promise<ALSReport> {
     }
 
     const parser = new DOMParser();
-    console.log(unzippedContent);
+    // console.log(unzippedContent);
     const parsedFile: XMLDocument = parser.parseFromString(
       unzippedContent,
       "text/xml",

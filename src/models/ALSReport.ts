@@ -6,10 +6,10 @@ export class ALSReport {
   fileName: string;
   shortFileName: string;
   liveVer: string;
-  tracks: Track[];
   createdDate: Date;
-  externalAudios: AudioClip[];
-  nonNativeDevices: Device[];
+  tracks: Track[];
+  audios: AudioClip[];
+  devices: Device[];
 
   constructor(fileName: string, root: Element) {
     this.fileName = fileName;
@@ -18,8 +18,8 @@ export class ALSReport {
     this.tracks = this.fetchTracks(root);
     this.tracks.push(this.fetchMasterTrack(root));
     this.createdDate = new Date();
-    this.externalAudios = this.scanAudiosDir();
-    this.nonNativeDevices = this.scanDevices();
+    this.audios = this.scanAudios();
+    this.devices = this.scanDevices();
   }
 
   private fetchLiveVersion(root: Element): string {
@@ -49,21 +49,19 @@ export class ALSReport {
     throw new Error("No Master Track found");
   }
 
-  private scanAudiosDir(): AudioClip[] {
-    let externalAudios = [];
+  private scanAudios(): AudioClip[] {
+    const audios = [];
 
     for (const track of this.tracks) {
       for (const audio of track.audios) {
-        if (!audio.checkAudioDir(this.shortFileName)) {
-          externalAudios.push(audio);
-        }
+        audios.push(audio);
       }
     }
-    return externalAudios;
+    return audios;
   }
 
   private scanDevices(): Device[] {
-    let nonNativeDevices = [];
+    const nonNativeDevices = [];
 
     for (const track of this.tracks) {
       for (const device of track.devices) {
