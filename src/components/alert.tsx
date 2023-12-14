@@ -10,7 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+import { buttonVariants } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 // TODO: refactor to have a base alert and subcomponents for each case
 
@@ -100,11 +101,10 @@ Alert.DeleteReport = ({ open, dispatch, deleteIndex }: DeleteAlertProps) => {
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              asChild
-              className="bg-destructive/50 text-destructive-foreground hover:border-foreground hover:bg-destructive "
+              className={cn(buttonVariants({ variant: "destructive" }))}
               onClick={handleReplace}
             >
-              <Button variant="destructive">Delete</Button>
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -106,9 +106,9 @@ const FileInput = ({
       <label
         htmlFor="dropzone-file"
         className={cn(
-          "bg-card/30 hover:bg-primary/25 flex w-full flex-1 flex-col overflow-hidden rounded-lg border-2 border-card-foreground shadow-lg transition hover:border hover:border-primary hover:shadow-2xl",
+          "flex w-full flex-1 flex-col overflow-hidden rounded-lg border-2 border-card-foreground bg-background/10 shadow-lg transition hover:border hover:border-primary hover:bg-primary/25 hover:shadow-2xl",
           {
-            "bg-primary/25 border border-primary": dragActive,
+            "border border-primary bg-primary/25": dragActive,
           },
         )}
       >
@@ -140,8 +140,7 @@ const FileInput = ({
             <>
               <FileUp className="hidden h-8 w-8 md:block" />
               <p className="select-none text-sm md:text-xs lg:text-sm">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop your .als file
+                <b>Click</b> or <b>drag and drop</b> to upload your .als file
               </p>
               <input
                 {...props}

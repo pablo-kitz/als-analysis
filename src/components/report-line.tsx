@@ -233,7 +233,11 @@ const getDetail2 = (type: Track | Device | AudioClip) => {
     return (
       <div className="line-clamp-1 overflow-clip pl-8 text-right">
         <Tooltip>
-          <TooltipTrigger>Devices: {type.devices.length}</TooltipTrigger>
+          <TooltipTrigger
+            className={cn({ "cursor-default": type.devices.length === 0 })}
+          >
+            Devices: {type.devices.length}
+          </TooltipTrigger>
           {type.devices.length > 0 && (
             <TooltipContent>
               {type.devices.map((device, index) => (
@@ -244,7 +248,11 @@ const getDetail2 = (type: Track | Device | AudioClip) => {
         </Tooltip>
         {" - "}
         <Tooltip>
-          <TooltipTrigger>Audios: {type.audios.length}</TooltipTrigger>
+          <TooltipTrigger
+            className={cn({ "cursor-default": type.audios.length === 0 })}
+          >
+            Audios: {type.audios.length}
+          </TooltipTrigger>
           {type.audios.length > 0 && (
             <TooltipContent>
               {type.audios.map((audio, index) => (
@@ -270,10 +278,16 @@ const getDetail2 = (type: Track | Device | AudioClip) => {
   // Audio
   if ("view" in type) {
     return (
-      <div className="line-clamp-1 overflow-clip pl-8 text-right">
+      <div className="line-clamp-1 flex justify-around overflow-clip pl-8 text-right">
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="line-clamp-1 overflow-clip">{type.location}</div>
+            <div
+              className={cn("line-clamp-1 overflow-clip font-bold", {
+                "text-destructive": !type.isOnRecommendedDir,
+              })}
+            >
+              {type.location}
+            </div>
           </TooltipTrigger>
           <TooltipContent>{type.location}</TooltipContent>
         </Tooltip>
