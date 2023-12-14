@@ -1,27 +1,40 @@
-# React + TypeScript + Vite
+# ALS Analysis
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ALS Analysis is an online tool designed to assist Ableton Live users in analyzing project files to identify plugin and audio file dependencies without loading them into the DAW.
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [ALS Analysis](#als-analysis)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Contact](#contact)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Project Analysis:** Gain insights into plugin and audio file dependencies within Ableton Live projects.
+- **File Processing:** Utilizes client-side JavaScript to process project files without external uploads.
+- **Marking External Files:** Identifies audio clips not stored in specified paths within the project.
 
-- Configure the top-level `parserOptions` property like this:
+## Contributing
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+Contributions are welcome! Follow these steps to contribute:
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Create a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any inquiries or suggestions, feel free to reach out:
+
+- GitHub: [pablo-kitz](https://github.com/pablo-kitz)
+- Instagram: [@pablokitz](https://www.instagram.com/pablokitz/)
+
