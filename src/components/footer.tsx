@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="relative flex justify-center py-2">
       <div className="absolute -top-16 z-0 h-64 w-64 rounded-full bg-primary blur-3xl filter"></div>
@@ -13,7 +17,7 @@ export function Footer() {
         </li>
         <div className="h-1 w-1 rounded-full bg-muted-foreground"></div>
         <li className="mx-2">
-          Created by{" "}
+          {t("footer.createdBy")}{" "}
           <a
             href="https://www.instagram.com/pablokitz/"
             className="hover:underline"

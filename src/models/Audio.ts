@@ -1,3 +1,10 @@
+const recommendedDirs = [
+  "User Library",
+  "Biblioteca de Usuario",
+  "Project",
+  "Proyecto",
+];
+
 export interface AudioClip {
   audioFileName: string;
   view: "session" | "arrangement";
@@ -63,14 +70,7 @@ export class AudioFactory implements AudioClip {
   }
 
   public isAudioOnRecommendedDir() {
-    if (
-      this.location.includes("User Library") ||
-      this.location.includes("Project")
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    return recommendedDirs.some((dir) => this.location.includes(dir));
   }
 
   fetchAudioFileName(): string {

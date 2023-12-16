@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { TooltipProvider } from "./components/ui/tooltip";
 import { ThemeProvider } from "./components/theme-provider";
 
@@ -5,14 +7,15 @@ import { Heading } from "./components/heading";
 import { Footer } from "./components/footer";
 import { Main } from "./components/main";
 import { Toaster } from "./components/ui/toaster";
+import { useEffect } from "react";
 
 function App() {
-  // const checkDuplicateReport = (fileName: string) => {
-  //   if (reports.some((ALSReport) => ALSReport.fileName == fileName)) {
-  //     throw new Error("duplicate report");
-  //   }
-  // };
+  const { i18n } = useTranslation();
 
+  useEffect(() => {
+    const lng = navigator.language;
+    i18n.changeLanguage(lng);
+  }, []);
   return (
     <>
       <TooltipProvider delayDuration={500}>

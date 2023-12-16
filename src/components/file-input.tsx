@@ -5,6 +5,7 @@ import { FileAction } from "./reducers/filesReducer";
 import { AnalizeALSFile } from "@/models";
 import { FileUp, Loader } from "lucide-react";
 import { useToast } from "./ui/use-toast";
+import { Trans, useTranslation } from "react-i18next";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
@@ -20,6 +21,8 @@ const FileInput = ({
   isLoading,
   ...props
 }: InputProps) => {
+  const { t } = useTranslation();
+
   const { toast } = useToast();
 
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -47,8 +50,8 @@ const FileInput = ({
 
       if (files.length !== validFiles.length) {
         toast({
-          title: "Invalid file type",
-          description: "Only .als files are allowed.",
+          title: t("toast.invalidFile.title"),
+          description: t("toast.invalidFile.description"),
         });
         return;
       }
@@ -60,8 +63,8 @@ const FileInput = ({
       } catch (error) {
         console.log(error);
         toast({
-          title: "Error",
-          description: "Error ocurred, please check the console",
+          title: t("toast.genericError.title"),
+          description: t("toast.invalidFile.description"),
         });
       }
     }
@@ -79,8 +82,8 @@ const FileInput = ({
     } catch (error) {
       console.log(error);
       toast({
-        title: "Error",
-        description: "Error ocurred, please check the console",
+        title: t("toast.genericError.title"),
+        description: t("toast.invalidFile.description"),
       });
     }
   };
@@ -140,7 +143,10 @@ const FileInput = ({
             <>
               <FileUp className="hidden h-8 w-8 md:block" />
               <p className="select-none text-sm md:text-xs lg:text-sm">
-                <b>Click</b> or <b>drag and drop</b> to upload your .als file
+                <Trans
+                  i18nKey="fileInput.description"
+                  components={{ b: <b /> }}
+                />
               </p>
               <input
                 {...props}
