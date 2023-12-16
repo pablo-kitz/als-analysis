@@ -1,7 +1,9 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { ALSReport } from "@/models/ALSReport";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+
+import { ALSReport } from "@/models/ALSReport";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { Track } from "@/models/Track";
 import { Device } from "@/models/Device";
 import { AudioClip } from "@/models/Audio";
@@ -21,13 +23,14 @@ type ReportLineProps = {
   onDelete: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export function ReportLine({
+function ReportLine({
   lineKey,
   report,
   selected,
   setSelected,
   onDelete,
 }: ReportLineProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState<ToggleMenus>("");
 
   useEffect(() => {
@@ -41,19 +44,31 @@ export function ReportLine({
   const toggleContent = {
     tracks: (
       <ReportLine.Detail
-        cols={["Track Name", "Track Type", "Track Devices - Audios"]}
+        cols={[
+          t("reportLine.tracks.column1"),
+          t("reportLine.tracks.column2"),
+          t("reportLine.tracks.column3"),
+        ]}
         type={report.tracks}
       />
     ),
     devices: (
       <ReportLine.Detail
-        cols={["Device Name", "Device Type", "Device Location"]}
+        cols={[
+          t("reportLine.devices.column1"),
+          t("reportLine.devices.column2"),
+          t("reportLine.devices.column3"),
+        ]}
         type={report.devices}
       />
     ),
     audios: (
       <ReportLine.Detail
-        cols={["Audio Name", "Audio View Location", "Audio File Location"]}
+        cols={[
+          t("reportLine.audios.column1"),
+          t("reportLine.audios.column2"),
+          t("reportLine.audios.column3"),
+        ]}
         type={report.audios}
       />
     ),
@@ -90,21 +105,21 @@ export function ReportLine({
               className="w-28 shadow-md shadow-foreground/10"
               value="tracks"
             >
-              {report.tracks.length} Tracks
+              {report.tracks.length} {t("reportLine.tracks.title")}
             </ToggleGroupItem>
             <ToggleGroupItem
               variant={"outline"}
               className="w-28 shadow-md shadow-foreground/10"
               value="devices"
             >
-              {report.devices.length} Devices
+              {report.devices.length} {t("reportLine.devices.title")}
             </ToggleGroupItem>
             <ToggleGroupItem
               variant={"outline"}
               className="w-28 shadow-md shadow-foreground/10"
               value="audios"
             >
-              {report.audios.length} Audios
+              {report.audios.length} {t("reportLine.audios.title")}
             </ToggleGroupItem>
           </ToggleGroup>
           <Button
@@ -165,13 +180,122 @@ ReportLine.Skeleton = () => {
   );
 };
 
-ReportLine.Detail = ({
+const Detail = ({
   type,
   cols,
 }: {
   type: Track[] | Device[] | AudioClip[];
   cols: string[];
 }) => {
+  const { t } = useTranslation();
+
+  // utility functions to get correct field depending on detail type
+  const getName = (type: Track | Device | AudioClip) => {
+    if ("devices" in type) {
+      return <div className={cn("font-bold")}>{type.name}</div>;
+    }
+    if ("path" in type) {
+      return <div className={cn("font-bold")}>{type.name}</div>;
+    }
+    if ("view" in type) {
+      return (
+        <div
+          className={cn("font-bold", {
+            "text-destructive": !type.isOnRecommendedDir,
+          })}
+        >
+          {type.audioFileName}
+        </div>
+      );
+    }
+  };
+
+  const getDetail1 = (type: Track | Device | AudioClip) => {
+    if ("type" in type) {
+      return (
+        <div className="overflow-clip text-ellipsis text-center">
+          {type.type}
+        </div>
+      );
+    }
+    if ("location" in type) {
+      return (
+        <div className="overflow-clip text-ellipsis text-center">
+          {type.view}
+        </div>
+      );
+    }
+  };
+
+  const getDetail2 = (type: Track | Device | AudioClip) => {
+    // Track
+    if ("devices" in type) {
+      return (
+        <div className="line-clamp-1 overflow-clip pl-8 text-right">
+          <Tooltip>
+            <TooltipTrigger
+              className={cn({ "cursor-default": type.devices.length === 0 })}
+            >
+              {t("reportLine.devices.title")} {type.devices.length}
+            </TooltipTrigger>
+            {type.devices.length > 0 && (
+              <TooltipContent>
+                {type.devices.map((device, index) => (
+                  <div key={index}>{device.name}</div>
+                ))}
+              </TooltipContent>
+            )}
+          </Tooltip>
+          {" - "}
+          <Tooltip>
+            <TooltipTrigger
+              className={cn({ "cursor-default": type.audios.length === 0 })}
+            >
+              {t("reportLine.audios.title")} {type.audios.length}
+            </TooltipTrigger>
+            {type.audios.length > 0 && (
+              <TooltipContent>
+                {type.audios.map((audio, index) => (
+                  <div key={index}>{audio.audioFileName}</div>
+                ))}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
+      );
+    }
+    // Device
+    if ("path" in type) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="line-clamp-1 overflow-clip pl-8">{type.path}</div>
+          </TooltipTrigger>
+          <TooltipContent>{type.path}</TooltipContent>
+        </Tooltip>
+      );
+    }
+    // Audio
+    if ("view" in type) {
+      return (
+        <div className="line-clamp-1 flex justify-around overflow-clip pl-8 text-right">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn("line-clamp-1 overflow-clip font-bold", {
+                  "text-destructive": !type.isOnRecommendedDir,
+                })}
+              >
+                {type.location}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>{type.location}</TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    }
+  };
+
   return (
     <>
       <div className="sticky top-0 grid grid-cols-3 divide-secondary-foreground/20 bg-accent px-6 text-xs text-primary shadow-sm">
@@ -193,105 +317,6 @@ ReportLine.Detail = ({
   );
 };
 
-// utility functions to get correct field depending on detail type
-const getName = (type: Track | Device | AudioClip) => {
-  if ("devices" in type) {
-    return <div className={cn("font-bold")}>{type.name}</div>;
-  }
-  if ("path" in type) {
-    return <div className={cn("font-bold")}>{type.name}</div>;
-  }
-  if ("view" in type) {
-    return (
-      <div
-        className={cn("font-bold", {
-          "text-destructive": !type.isOnRecommendedDir,
-        })}
-      >
-        {type.audioFileName}
-      </div>
-    );
-  }
-};
+ReportLine.Detail = Detail;
 
-const getDetail1 = (type: Track | Device | AudioClip) => {
-  if ("type" in type) {
-    return (
-      <div className="overflow-clip text-ellipsis text-center">{type.type}</div>
-    );
-  }
-  if ("location" in type) {
-    return (
-      <div className="overflow-clip text-ellipsis text-center">{type.view}</div>
-    );
-  }
-};
-
-const getDetail2 = (type: Track | Device | AudioClip) => {
-  // Track
-  if ("devices" in type) {
-    return (
-      <div className="line-clamp-1 overflow-clip pl-8 text-right">
-        <Tooltip>
-          <TooltipTrigger
-            className={cn({ "cursor-default": type.devices.length === 0 })}
-          >
-            Devices: {type.devices.length}
-          </TooltipTrigger>
-          {type.devices.length > 0 && (
-            <TooltipContent>
-              {type.devices.map((device, index) => (
-                <div key={index}>{device.name}</div>
-              ))}
-            </TooltipContent>
-          )}
-        </Tooltip>
-        {" - "}
-        <Tooltip>
-          <TooltipTrigger
-            className={cn({ "cursor-default": type.audios.length === 0 })}
-          >
-            Audios: {type.audios.length}
-          </TooltipTrigger>
-          {type.audios.length > 0 && (
-            <TooltipContent>
-              {type.audios.map((audio, index) => (
-                <div key={index}>{audio.audioFileName}</div>
-              ))}
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </div>
-    );
-  }
-  // Device
-  if ("path" in type) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="line-clamp-1 overflow-clip pl-8">{type.path}</div>
-        </TooltipTrigger>
-        <TooltipContent>{type.path}</TooltipContent>
-      </Tooltip>
-    );
-  }
-  // Audio
-  if ("view" in type) {
-    return (
-      <div className="line-clamp-1 flex justify-around overflow-clip pl-8 text-right">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              className={cn("line-clamp-1 overflow-clip font-bold", {
-                "text-destructive": !type.isOnRecommendedDir,
-              })}
-            >
-              {type.location}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>{type.location}</TooltipContent>
-        </Tooltip>
-      </div>
-    );
-  }
-};
+export { ReportLine };

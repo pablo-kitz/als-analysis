@@ -119,7 +119,7 @@ export class M4LPluginDevice extends DeviceFactory {
     }
   }
 
-  protected fetchDeviceName(node: Element): string {
+  protected fetchDeviceName(): string {
     const regexPattern = "^(?:.*/)?([^/]+?|)(?=(?:.[^/.]*)?$)";
     const deviceNameMatch = this.path.match(regexPattern);
 
