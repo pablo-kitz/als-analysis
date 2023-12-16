@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { LangToggle } from "./lang-toggle";
 
 export function Heading() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ export function Heading() {
         <header className="flex flex-col gap-2 bg-gradient-to-l from-muted to-popover px-8 py-4 lg:px-16">
           <div className="h-40 w-5/6">
             <ModeToggle />
+            <LangToggle />
             <h1 className="text-4xl font-bold tracking-wider xl:text-5xl/relaxed 2xl:text-6xl/relaxed">
               {t("heading.title")}
             </h1>
