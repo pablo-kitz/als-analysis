@@ -55,6 +55,24 @@ export class AudioFactory implements AudioClip {
   }
 
   fetchAudioLocation(node: Element): string {
+    const hasRelativePath = node
+      .getElementsByTagName("HasRelativePath")
+      .item(0)
+      ?.getAttribute("Value");
+
+    if (hasRelativePath === "true") {
+      const pathHint = node.getElementsByTagName("PathHint").item(0)?.children;
+
+      if (pathHint == undefined) {
+        return "";
+      }
+      let path = "";
+      for (let i = 0; i < pathHint?.length; i++) {
+        path += "/" + pathHint[i].getAttribute("Dir");
+      }
+      return path;
+    }
+
     const location = node
       .getElementsByTagName("FileRef")
       .item(0)
@@ -63,6 +81,7 @@ export class AudioFactory implements AudioClip {
       ?.getAttribute("Value");
 
     if (typeof location !== "string") {
+      console.log(node);
       throw new Error("Could not find Clip Location");
     }
 
